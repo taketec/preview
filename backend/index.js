@@ -8,6 +8,7 @@ import * as Server from 'socket.io';
 import mongoose from "mongoose"
 const PORT = process.env.PORT || 8000
 
+import adminRoutes from './routes/admin.js';
 
 mongoose.set('strictQuery', false);
 mongoDBConnect();
@@ -47,15 +48,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(createLog)
 
-if(process.env.PRODUCTION == "true"){
-  app.use(limiter)
-}
+
 
 
 //app.use(limiter)
 //xapp.options("*",cors(corsConfig))
 app.use(cors(corsConfig));
 app.use('/', userRoutes);
+app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: "hi humans" });
