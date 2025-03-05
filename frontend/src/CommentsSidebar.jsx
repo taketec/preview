@@ -69,17 +69,19 @@ const CommentsSidebar = ({ previewKey }) => {
 
   return (
     <div
-      className={`absolute top-0 right-0 h-full bg-black bg-opacity-85 text-white transition-all duration-300 box-border flex flex-col p-2 overflow-hidden ${
+      className={`absolute top-0 right-0 h-full bg-black bg-opacity-85 text-white transition-all duration-300 box-border flex flex-col p-2 overflow-visible ${
         collapsed ? 'w-8' : 'w-72'
       }`}
     >
-      {/* Toggle button as a vertical rectangle on the middle left edge */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 w-8 h-16 bg-gray-500 text-black flex items-center justify-center rounded-r"
-      >
-        {collapsed ? '<' : '>'}
-      </button>
+      {/* Toggle button that spills outward */}
+<button
+onClick={() => setCollapsed(!collapsed)}
+className="absolute top-1/2 transform -translate-y-1/2 w-8 h-16 bg-black bg-opacity-85 text-white flex items-center justify-center rounded-l z-10"
+style={{ left: "-2rem" }}
+>
+{collapsed ? '<' : '>'}
+</button>
+
       {!collapsed && (
         <>
           <h3 className="text-xl mb-2 pb-1 border-b border-white/30">

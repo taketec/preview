@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { baseUrl } from './apis';
+import { Link } from 'react-router-dom';
 
 function Admin() {
   const [previews, setPreviews] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [copiedKey, setCopiedKey] = useState(null);
 
   // Fetch all preview documents from the API
   const fetchPreviews = async () => {
@@ -78,6 +79,15 @@ function Admin() {
     }
   };
 
+  // Copy the viewer URL to clipboard without alerting
+  const handleCopy = (key) => {
+    const viewerUrl = `http://localhost:5173/viewer/${key}`;
+    navigator.clipboard.writeText(viewerUrl).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    });
+  };
+
   return (
     <div style={{ padding: '20px' }}>
       <h2>Admin Preview Manager</h2>
@@ -105,34 +115,40 @@ function Admin() {
         {previews.length === 0 ? (
           <p>No previews available.</p>
         ) : (
-          <ul>
-            {previews.map((preview) => (
-              <li key={preview._id} style={{ marginBottom: '15px' }}>
-                <div>
-                  <strong>Key:</strong> {preview.key}
-                </div>
-                <div>
-                  <strong>URL:</strong>{' '}
-                  <a 
-                    href={preview.s3Url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+          <ul style={{ padding: 0, listStyle: 'none' }}>
+            {previews.map((preview) => {
+              const viewerUrl = `http://localhost:5173/viewer/${preview.key}`;
+              return (
+                <li key={preview._id} style={{ marginBottom: '15px', padding: '10px', borderBottom: '1px solid #ccc' }}>
+                  <div>
+                    <strong>Key:</strong> {preview.key}
+                  </div>
+                  <div>
+                    <strong>View:</strong>{' '}
+                    <a 
+                      href={viewerUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ color: 'blue', textDecoration: 'underline' }}
+                    >
+                      {viewerUrl}
+                    </a>
+                    <button 
+                      onClick={() => handleCopy(preview.key)}
+                      style={{ marginLeft: '10px', padding: '2px 6px', fontSize: '0.8rem' }}
+                    >
+                      {copiedKey === preview.key ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => handleDelete(preview.key)}
+                    style={{ marginTop: '5px' }}
                   >
-                    {preview.s3Url}
-                  </a>
-                </div>
-                <div>
-                  <strong>View:</strong>{' '}
-                  <Link to={`/viewer/${preview.key}`}>Go to Viewer</Link>
-                </div>
-                <button 
-                  onClick={() => handleDelete(preview.key)}
-                  style={{ marginTop: '5px' }}
-                >
-                  Delete Preview
-                </button>
-              </li>
-            ))}
+                    Delete Preview
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
