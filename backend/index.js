@@ -15,15 +15,8 @@ mongoDBConnect();
 
 const allowed_origins =   [
   'http://localhost:5173',
-  'http://localhost:3001',
-  'http://localhost:3000',
-  'http://localhost:3002',
-  'http://192.168.1.4:3000',
-  'https://stream-sync-app.onrender.com',
-  'https://stream-sync-frontend-s3.s3-website.ap-south-1.amazonaws.com',
-  'http://stream-sync-frontend-s3.s3-website.ap-south-1.amazonaws.com',
-  'https://deploy.dd5lzrcymgwyt.amplifyapp.com',
-  'https://echo-live.d38jdr8u5dmfe7.amplifyapp.com'
+  "https://abhishekcreations.com",
+  "https://main.d1uy8jdq91e99t.amplifyapp.com"
 ]
 
 

@@ -29,6 +29,7 @@ function Admin() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      console.log(baseUrl)
       const res = await fetch(`${baseUrl}/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

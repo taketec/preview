@@ -1,1 +1,1 @@
-export const baseUrl = "https://abhishekcreations.com/b/"
+export const baseUrl = "https://abhishekcreations.com/b"
