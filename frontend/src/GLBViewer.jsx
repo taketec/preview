@@ -24,6 +24,7 @@ export default function GLBViewer() {
   const [modelLoaded, setModelLoaded] = useState(false); // controls model download
   const [status, setStatus] = useState('Fetching preview...');
   const [error, setError] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false); // Theme toggle state
   const dist = 10; // Light distance value
 
   useEffect(() => {
@@ -70,7 +71,46 @@ export default function GLBViewer() {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <Canvas camera={{ position: [0, 3, 3] }} style={{ width: '100%', height: '100%' }}>
+      {/* Theme Toggle Button */}
+      <button
+        onClick={() => setIsDarkMode(!isDarkMode)}
+        style={{
+          position: 'absolute',
+          bottom: 20,
+          left: 20,
+          zIndex: 20,
+          background: 'rgba(255,255,255,0.2)',
+          padding: '10px',
+          borderRadius: '5px',
+          color: isDarkMode ? '#A9A9A9' : '#A9A9A9',
+          cursor: 'pointer',
+          transition: 'opacity 0.3s ease',
+          opacity: 0.5,
+        }}
+        onMouseEnter={(e) => (e.target.style.opacity = 1)}
+        onMouseLeave={(e) => (e.target.style.opacity = 0.5)}
+      >
+        {isDarkMode ? '☀️' : '🌙'}
+      </button>
+
+      {/* Logo in the top left */}
+      <img
+        src="https://abhishekcreations.com/wp-content/uploads/2023/09/abhishek-logo.png"
+        alt="Logo"
+        style={{
+          position: 'absolute',
+          top: 20,
+          left: 20,
+          width: 50,
+          height: 50,
+          zIndex: 20,
+        }}
+      />
+
+      <Canvas
+        camera={{ position: [0, 3, 3] }}
+        style={{ width: '100%', height: '100%', background: isDarkMode ? '#111' : '#fff' }}
+      >
         <ambientLight intensity={0.5} />
         <directionalLight position={[dist, dist, dist]} intensity={1} />
         <directionalLight position={[-dist, dist, dist]} intensity={1} />
@@ -80,16 +120,7 @@ export default function GLBViewer() {
         <directionalLight position={[-dist, dist, -dist]} intensity={1} />
         <directionalLight position={[dist, -dist, -dist]} intensity={1} />
         <directionalLight position={[-dist, -dist, -dist]} intensity={1} />
-        <Suspense
-          fallback={
-            <Html center>
-            </Html>
-          }
-        >
-          {s3Url && (
-            <Model url={s3Url} onLoaded={() => setModelLoaded(true)} />
-          )}
-        </Suspense>
+        <Suspense fallback={<Html center />}>{s3Url && <Model url={s3Url} onLoaded={() => setModelLoaded(true)} />}</Suspense>
         <OrbitControls />
       </Canvas>
       {/* Loader overlay: remains visible until both preview and model are loaded */}
@@ -130,6 +161,22 @@ export default function GLBViewer() {
       )}
       {/* Overlay the collapsible CommentsSidebar */}
       <CommentsSidebar previewKey={previewKey} />
+      
+      {/* Disclaimer */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 3,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          fontSize: '8px',
+          color: isDarkMode ? '#bbb' : '#555',
+          textAlign: 'center',
+          zIndex: 20,
+        }}
+      >
+        Disclaimer: All rights are reserved by Abhishek Creations for this design until final option is selected & payment made towards the same. This design cannot be copied/replicated/used in any form unless written consent taken from Abhishek Creations.
+      </div>
     </div>
   );
 }

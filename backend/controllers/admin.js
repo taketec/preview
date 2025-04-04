@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { Preview } from '../models/preview.js';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import fs from 'fs/promises';
 
 const s3Client = new S3Client({
@@ -22,57 +23,56 @@ function generateRandomCode() {
   return result.slice(0, 3) + '-' + result.slice(3, 7) + '-' + result.slice(7);
 }
 
-
 export const uploadPreview = async (req, res) => {
   try {
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({ error: 'No file provided' });
+    // Expect JSON payload with fileName and contentType
+    const { fileName, contentType } = req.body;
+    if (!fileName || !contentType) {
+      return res.status(400).json({ error: 'Missing fileName or contentType in request body' });
     }
-    // Generate a random code for the S3 key
+    
+    // Generate a random code
     const randomCode = generateRandomCode();
-    // Extract the file extension (including the dot), if any
-    const extension = file.originalname.includes('.') ? file.originalname.substring(file.originalname.lastIndexOf('.')) : '';
-    // Create the S3 key using the random code and the file extension
-    const filename = file.originalname.includes('.') 
-  ? file.originalname.substring(0, file.originalname.lastIndexOf('.')) 
-  : file.originalname;
+    
+    // Extract the file extension and base filename
+    const extension = fileName.includes('.') ? fileName.substring(fileName.lastIndexOf('.')) : '';
+    const baseName = fileName.includes('.') ? fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+    
+    // Construct the S3 key (you may adjust the formatting as needed)
+    const key = `${randomCode}-${baseName}${extension}`;
+    const key1 = `${randomCode}-${baseName}`
 
-
-    const key = `${randomCode}-${filename}`;
-
-    // Read the file from the temporary uploads folder
-    const fileBuffer = await fs.readFile(file.path);
-
-    // Upload the file to S3
-    const uploadParams = {
+    // Create a PutObjectCommand for uploading to S3
+    const command = new PutObjectCommand({
       Bucket: bucketName,
-      Key: key+extension,
-      Body: fileBuffer,
-      ContentType: file.mimetype
-    };
-    await s3Client.send(new PutObjectCommand(uploadParams));
-
-    // Generate a public URL for the uploaded file
-    const s3Url = `https://${bucketName}.s3.amazonaws.com/${key+extension}`;
-
+      Key: key,
+      ContentType: contentType
+    });
+    
+    // Generate a presigned URL (valid for, e.g., 1 hour)
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    
+    // Generate the public URL (assuming your bucket is public)
+    const s3Url = `https://${bucketName}.s3.amazonaws.com/${key}`;
+    
     // Create a new Preview document in MongoDB
     const preview = new Preview({
       s3Url,
-      key,
+      key:key1,
       comments: []
     });
     await preview.save();
-
-    // Remove the temporary file
-    await fs.unlink(file.path);
-
-    res.status(201).json({ message: 'File uploaded successfully', preview });
+    
+    res.status(201).json({ 
+      message: 'Presigned URL generated successfully', 
+      presignedUrl, 
+      preview 
+    });
   } catch (error) {
     console.error('Error in uploadPreview:', error);
     res.status(500).json({ error: 'Error uploading file' });
   }
-}
+};
 
 
 export const updatePreview = async (req, res) => {

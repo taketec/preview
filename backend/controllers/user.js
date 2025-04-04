@@ -1,6 +1,5 @@
 // import argon2 from "argon2";
 import user from '../models/user.js';
-import axios from "axios"
 import jwt from 'jsonwebtoken';
 import crypto from "crypto"
 
