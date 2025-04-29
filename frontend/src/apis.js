@@ -1,1 +1,1 @@
-export const baseUrl = "heroic-mindfulness-production-3f35.up.railway.app"
+export const baseUrl = "https://heroic-mindfulness-production-3f35.up.railway.app"
