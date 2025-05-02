@@ -15,7 +15,7 @@ mongoDBConnect();
 
 const allowed_origins =   [
   'http://localhost:5173',
-  "https://abhishekcreations.com",
+  "https://preview.abhishekcreations.com",
   "https://main.d1uy8jdq91e99t.amplifyapp.com"
 ]
 
