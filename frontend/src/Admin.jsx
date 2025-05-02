@@ -151,7 +151,7 @@ function Admin() {
         {previews.length === 0 ? <p>No previews available.</p> : previews.map((preview) => (
           <div key={preview._id} className="p-4 border-b border-gray-700">
             <div className="mb-2"><strong>Key:</strong> {preview.key}</div>
-            <a href={`https://main.d1uy8jdq91e99t.amplifyapp.com/viewer/${preview.key}`} target="_blank" rel="noopener noreferrer" className="text-gray-300 underline hover:text-white">View</a>
+            <a href={`https://preview.abhishekcreations.com/viewer/${preview.key}`} target="_blank" rel="noopener noreferrer" className="text-gray-300 underline hover:text-white">View</a>
             <button onClick={() => handleDelete(preview.key)} className="ml-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded">Delete</button>
           </div>
         ))}
